@@ -1,6 +1,6 @@
 const Sidebar = () => {
   return (
-    <div className="col-span-1  flex flex-col p-6 gap-8 border-r-2 border-grey-200">
+    <div className="col-span-1  flex flex-col items-centers p-6 gap-8 border-r-2 border-grey-200">
       <div>Second Brain</div>
       <ul className="flex flex-col gap-5">
         <li className="flex items-center gap-3">

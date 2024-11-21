@@ -4,7 +4,10 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import { SetterOrUpdater } from "recoil";
+import { SetterOrUpdater, useRecoilValue } from "recoil";
+import ContentForm from "./ContentForm";
+import axios from "axios";
+import { formInputAtom } from "../../atoms";
 
 interface Modal {
   isModalOpen: boolean;
@@ -12,6 +15,26 @@ interface Modal {
 }
 
 const Modal = (props: Modal) => {
+  const formValue = useRecoilValue(formInputAtom);
+
+  async function addContent(e) {
+    e.preventDefault();
+    const token = localStorage.getItem("token");
+    const response = await axios.post(
+      "http://localhost:3000/api/v1/content",
+      {
+        type: formValue.type,
+        title: formValue.title,
+        link: formValue.link,
+        tags: formValue.tags,
+      },
+      { headers: { token } }
+    );
+    console.log(response);
+    alert("content added");
+    props.setIsModalOpen(false);
+  }
+
   return (
     <Dialog
       open={props.isModalOpen}
@@ -37,7 +60,7 @@ const Modal = (props: Modal) => {
                     className="size-6 text-red-600"
                   />
                 </div> */}
-                <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
+                <div className="mt-3  text-center sm:ml-4 sm:mt-0 sm:text-left">
                   <DialogTitle
                     as="h3"
                     className="text-base font-semibold text-gray-900"
@@ -47,8 +70,21 @@ const Modal = (props: Modal) => {
                 </div>
               </div>
             </div>
+            <div className="bg-white px-4 pb-5 pt-5 sm:p-6 sm:pb-4">
+              <div className="sm:flex sm:items-start">
+                <div className="mt-3 w-full text-center sm:ml-4 sm:mt-0 sm:text-left">
+                  <DialogTitle
+                    as="h3"
+                    className="text-base font-semibold text-gray-900"
+                  >
+                    <ContentForm />
+                  </DialogTitle>
+                </div>
+              </div>
+            </div>
             <div className="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
               <button
+                onClick={addContent}
                 type="button"
                 className="inline-flex w-full justify-center rounded-md bg-purple-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-purple-600 sm:ml-3 sm:w-auto"
               >

@@ -1,14 +1,24 @@
 import "./App.css";
-import Sidebar from "./components/ui/Sidebar";
-import Content from "./components/ui/Content";
+import { useEffect } from "react";
 import { RecoilRoot } from "recoil";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./components/ui/Home";
+import Dashboard from "./components/ui/Dashboard";
+import Signup from "./components/ui/Signup";
+import Login from "./components/ui/Login";
 
 function App() {
   return (
-    <main className="grid grid-cols-5 min-h-screen">
+    <main className="min-h-screen">
       <RecoilRoot>
-        <Sidebar />
-        <Content />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Routes>
+        </BrowserRouter>
       </RecoilRoot>
     </main>
   );

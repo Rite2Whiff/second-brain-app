@@ -4,6 +4,11 @@ import jwt from "jsonwebtoken";
 import { userModel, contentModel } from "./db";
 import { JWT_SECRET, connectionDB } from "./config";
 import { authMiddleware } from "./middleware";
+import cors from "cors";
+
+const app = express();
+app.use(express.json());
+app.use(cors());
 
 declare global {
   namespace Express {
@@ -15,9 +20,6 @@ declare global {
     }
   }
 }
-
-const app = express();
-app.use(express.json());
 
 app.post("/api/v1/signup", async (req, res) => {
   const { username, password } = req.body;
@@ -91,7 +93,7 @@ app.get("/api/v1/content", authMiddleware, async (req, res) => {
   }
 
   const content = await contentModel
-    .findOne({
+    .find({
       userId: userId,
     })
     .populate("userId", "username");

@@ -2,8 +2,13 @@ import { Button } from "./Button";
 import Modal from "./Modal";
 import { useRecoilState } from "recoil";
 import { modalAtom } from "../../atoms";
+import Card from "./Card";
 
-const Content = () => {
+export interface ContentInterface {
+  id: string;
+}
+
+const Content = (props: ContentInterface) => {
   const [isModalOpen, setIsModalOpen] = useRecoilState(modalAtom);
 
   return (
@@ -26,6 +31,9 @@ const Content = () => {
         </div>
       </div>
       <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+      <div>
+        <Card id={props.id} />
+      </div>
     </div>
   );
 };
