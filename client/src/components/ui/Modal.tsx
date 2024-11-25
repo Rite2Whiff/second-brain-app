@@ -4,10 +4,10 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import { SetterOrUpdater, useRecoilValue } from "recoil";
+import { SetterOrUpdater, useRecoilState, useSetRecoilState } from "recoil";
 import ContentForm from "./ContentForm";
 import axios from "axios";
-import { formInputAtom } from "../../atoms";
+import { contentAtom, formInputAtom } from "../../atoms";
 
 interface Modal {
   isModalOpen: boolean;
@@ -15,7 +15,8 @@ interface Modal {
 }
 
 const Modal = (props: Modal) => {
-  const formValue = useRecoilValue(formInputAtom);
+  const [formValue, setFromValue] = useRecoilState(formInputAtom);
+  const setContent = useSetRecoilState(contentAtom);
 
   async function addContent(e) {
     e.preventDefault();
@@ -31,8 +32,10 @@ const Modal = (props: Modal) => {
       { headers: { token } }
     );
     console.log(response);
-    alert("content added");
     props.setIsModalOpen(false);
+    const newContent = response.data.content;
+    setContent((prevState: object[]) => [...prevState, newContent]);
+    setFromValue({ ...formValue, title: "", link: "", tags: "" });
   }
 
   return (
@@ -77,7 +80,7 @@ const Modal = (props: Modal) => {
                     as="h3"
                     className="text-base font-semibold text-gray-900"
                   >
-                    <ContentForm />
+                    <ContentForm onSubmit={addContent} />
                   </DialogTitle>
                 </div>
               </div>

@@ -67,7 +67,7 @@ app.post("/api/v1/content", authMiddleware, async (req, res) => {
     return;
   }
 
-  await contentModel.create({
+  const content = await contentModel.create({
     userId,
     link,
     title,
@@ -77,7 +77,7 @@ app.post("/api/v1/content", authMiddleware, async (req, res) => {
 
   res.json({
     message: "Content addded sucessfully",
-    userId,
+    content,
   });
 });
 

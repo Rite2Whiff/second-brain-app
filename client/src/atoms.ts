@@ -1,5 +1,5 @@
 import axios from "axios";
-import { atom, atomFamily, selectorFamily } from "recoil";
+import { atom, selector } from "recoil";
 export const modalAtom = atom({
   key: "modalAtom",
   default: false,
@@ -23,21 +23,16 @@ export const authFormAtom = atom({
   },
 });
 
-export const contentAtomFamily = atomFamily({
-  key: "contentAtomFamily",
-  default: selectorFamily({
-    key: "contentSelectorFamily",
-    get: (id) =>
-      async function ({ get }) {
-        const token = localStorage.getItem("token");
-        if (token) {
-          const response = await axios.get(
-            "http://localhost:3000/api/v1/content",
-            { headers: { token } }
-          );
-          const dataArray = response.data.content;
-          return dataArray.find((item) => item._id === id);
-        }
-      },
+export const contentAtom = atom({
+  key: "contentAtom",
+  default: selector({
+    key: "contentSelector",
+    get: async function () {
+      const token = localStorage.getItem("token");
+      const response = await axios.get("http://localhost:3000/api/v1/content", {
+        headers: { token },
+      });
+      return response.data.content;
+    },
   }),
 });

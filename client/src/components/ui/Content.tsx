@@ -4,11 +4,7 @@ import { useRecoilState } from "recoil";
 import { modalAtom } from "../../atoms";
 import Card from "./Card";
 
-export interface ContentInterface {
-  id: string;
-}
-
-const Content = (props: ContentInterface) => {
+const Content = () => {
   const [isModalOpen, setIsModalOpen] = useRecoilState(modalAtom);
 
   return (
@@ -32,7 +28,7 @@ const Content = (props: ContentInterface) => {
       </div>
       <Modal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
       <div>
-        <Card id={props.id} />
+        <Card />
       </div>
     </div>
   );
