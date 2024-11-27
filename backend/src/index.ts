@@ -5,6 +5,8 @@ import { userModel, contentModel } from "./db";
 import { JWT_SECRET, connectionDB } from "./config";
 import { authMiddleware } from "./middleware";
 import cors from "cors";
+import { string, z } from "zod";
+import bcrypt from "bcrypt";
 
 const app = express();
 app.use(express.json());
@@ -22,11 +24,40 @@ declare global {
 }
 
 app.post("/api/v1/signup", async (req, res) => {
-  const { username, password } = req.body;
+  const userSchema = z.object({
+    username: z
+      .string()
+      .min(3, "Username should atleast be 3 characters")
+      .max(10, "username cannot be more than 10 characters"),
+    password: z
+      .string()
+      .min(8, "Password must atleast be 8 characters")
+      .max(20, "Password cannot be more than 20 characters")
+      .regex(/[A-Z]/, "Password must atleast contain one uppercase character")
+      .regex(/[a-z]/, "Password must atleast contain one lowercase character")
+      .regex(
+        /[@$!%*?&#]/,
+        "Password must contain atleast one special character"
+      )
+      .regex(/\d/, "Password must atleast contain 1 number"),
+  });
+
+  const validation = userSchema.safeParse(req.body);
+
+  if (!validation.data) {
+    res.json({
+      success: false,
+      error: validation.error.errors.map((err) => err.message),
+    });
+    return;
+  }
+
+  const { username, password } = validation.data;
+  const hashedPassword = await bcrypt.hash(password, 5);
 
   await userModel.create({
     username,
-    password,
+    password: hashedPassword,
   });
 
   res.json({
@@ -37,19 +68,23 @@ app.post("/api/v1/signup", async (req, res) => {
 app.post("/api/v1/login", async (req, res) => {
   const { username, password } = req.body;
 
-  const foundUser = await userModel.findOne({
+  const User = await userModel.findOne({
     username,
-    password,
   });
 
-  if (!foundUser) {
+  const decyptedPassword = await bcrypt.compare(
+    password,
+    User?.password as string
+  );
+
+  if (!decyptedPassword) {
     res.json({
       message: "Invalid credentials",
     });
     return;
   }
 
-  const token = jwt.sign({ id: foundUser._id }, JWT_SECRET);
+  const token = jwt.sign({ id: User?._id }, JWT_SECRET);
   res.json({
     token,
   });
